@@ -1,0 +1,22 @@
+.Header{
+    text-align: center;
+    background-color: #319DEF;
+    padding: 0.5em;
+}
+
+.Header__logo{
+    margin-top: 1em;
+    height: 3em;
+    color: white;
+}
+
+.Header__heading{
+    margin-top: 0.2em;
+}
+
+.Header__headingtext{
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1.6em;
+    font-weight: 800;
+    color: #fff;
+}

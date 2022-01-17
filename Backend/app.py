@@ -1,10 +1,11 @@
 from flask import Flask,jsonify,request
 import os
-# from werkzeug.utils import secure_filename
-import Backend.dockerHandling as dockerHandling
+from werkzeug.utils import secure_filename
+import dockerHandling
 
 app = Flask('dockerApp')
 docker = dockerHandling.DockerHandling('tcp://192.168.56.106:2700')
+uploadPath= "C:\\Users\\ayush\\Desktop\\test"
 
 @app.route("/pullimages",methods=["GET"])
 def pullImages():
@@ -29,33 +30,6 @@ def imageSearch():
     result = docker.dockerImagesSearch(imgname)
     return jsonify(result)
 
-@app.route("/runcontainer",methods=["GET"])
-def runContainers():
-    imgname = request.args.get("imgname")
-    containerName = request.args.get("name")
-    detach = bool(request.args.get("detach"))
-    tty = bool(request.args.get("tty"))
-    cmd = request.args.get("cmd")
-    ports = request.args.get("ports")
-    if ports is not None:
-        portsplit = ports.split(":")
-        ports = {portsplit[1]+'/tcp':int(portsplit[0])}
-    env = request.args.get("env")
-    if env is not None:
-        env = list(env.split(","))
-    result = docker.dockerCreateContainer(imgname,containerName,detach,tty,cmd,ports,env)
-    return jsonify(result)
-
-# @app.route("/imagebuild", methods=['GET', 'POST'])
-# def imageBuild():
-#         tag = request.args.get("tag")
-#         uploadPath= "C:\\Users\\ayush\\Desktop\\test"
-#         if request.method=='POST':
-#             f = request.files['file1']
-#             f.save(os.path.join(uploadPath,secure_filename(f.filename)))
-#             result = docker.dockerImagesBuild(uploadPath,tag)
-#             return jsonify(result)
-
 @app.route("/stopcontainer",methods=["GET"])
 def stopContainer():
     contid = request.args.get("contid")
@@ -74,6 +48,37 @@ def removeContainer():
     contid = request.args.get("contid")
     result = docker.dockerRemoveContainer(contid)
     return jsonify(result)
+
+@app.route("/runcontainer",methods=["GET"])
+def runContainers():
+    imgname = request.args.get("imgname")
+    containerName = request.args.get("name")
+    detach = bool(request.args.get("detach"))
+    tty = bool(request.args.get("tty"))
+    cmd = request.args.get("cmd")
+    ports = request.args.get("ports")
+    if ports is not None:
+        portsplit = ports.split(":")
+        ports = {portsplit[1]+'/tcp':int(portsplit[0])}
+    env = request.args.get("env")
+    if env is not None:
+        env = list(env.split(","))
+    result = docker.dockerCreateContainer(imgname,containerName,detach,tty,cmd,ports,env)
+    return jsonify(result)
+
+@app.route("/uploader", methods=['POST'])
+def uploader():
+        if request.method=='POST':
+            f = request.files['file1']
+            f.save(os.path.join(uploadPath,secure_filename(f.filename)))
+            return "Upload Successfully"
+            
+@app.route("/buildimage",methods=["GET"])
+def buildImage():
+        tag = request.args.get("tag")
+        result = docker.dockerImagesBuild(uploadPath,tag)
+        return jsonify(result)
+
 
 
 app.run(port=3000,debug=True)

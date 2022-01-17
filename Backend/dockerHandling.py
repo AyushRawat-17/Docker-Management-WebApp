@@ -9,6 +9,17 @@ class DockerHandling:
         except:
             return False
 
+    def updateClient(self,clienturl):
+        try:
+            self.client = docker.DockerClient(clienturl)
+            return {
+                "status":0
+            }
+        except:
+            return {
+                "status": 1
+            }
+
     def dockerimagespull(self,dockerImageName):
         try:
             img = self.client.images.pull(dockerImageName)

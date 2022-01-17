@@ -7,6 +7,12 @@ app = Flask('dockerApp')
 docker = dockerHandling.DockerHandling('tcp://192.168.56.106:2700')
 uploadPath= "C:\\Users\\ayush\\Desktop\\test"
 
+@app.route("/remote",methods=["GET"])
+def remoteClient():
+    client = request.args.get("client")
+    result = docker.updateClient(client)
+    return jsonify(result)
+
 @app.route("/pullimages",methods=["GET"])
 def pullImages():
     imgname = request.args.get("imgname")
@@ -41,7 +47,6 @@ def startContainer():
     contid = request.args.get("contid")
     result = docker.dockerStartContainer(contid)
     return jsonify(result)
-
 
 @app.route("/removecontainer",methods=["GET"])
 def removeContainer():
